@@ -1,26 +1,33 @@
-require('dotenv').config()
+require('dotenv').config();
+const fetch = require('cross-fetch');
 const TB = require('node-telegram-bot-api');
 const TOKEN = process.env.BOT;
 const bot = new TB(TOKEN, { polling: true });
-// var IK = require("imagekit");
-// var imagekit = new IK({
-//     publicKey: process.env.PUBLIC,
-//     privateKey: process.env.PRIVATE,
-//     urlEndpoint: process.env.URL
-// });
-bot.on('message', (message) => {
-    console.log(message)
-    bot.sendMessage(message.chat.id, 'Received your message');
-    // if (message.document) {
-    //     bot.getFileLink(message.document.file_id).then((resp) => {
-    //         imagekit.upload({ file: resp, fileName: message.document.file_unique_id }, (error, result) => {
-    //             if (error) {
-    //                 console.log(error)
-    //             }
-    //             else {
-    //                 bot.sendMessage(message.chat.id, result.url);
-    //             };
-    //         });
-    //     })
-    // }
+bot.on('message', async (message) => {
+    let text = message.text;
+    if (text) {
+        if (text.toLowerCase() === "/hello") { // Hello Command
+            bot.sendMessage(message.chat.id, `Hello ${message.from.first_name}`)
+        } else if (text.startsWith("/quote")) { // Quote Command
+            const quoteResponse = await fetch(`https://api.quotable.io/random`);
+            const quoteData = await quoteResponse.json();
+            bot.sendMessage(message.chat.id, `${String(quoteData.content + " | " + quoteData.author)}`);
+        } else if (text.startsWith("/weather")) { // Weather Command
+            if (text.includes(" ")) {
+                var newmessage = String(text);
+                newmessage = newmessage.split(" ");
+                newmessage = newmessage[1];
+                const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${newmessage}&appid=${process.env.WEATHER}`);
+                const data = await response.json();
+                if (data.cod == "200") {
+                    bot.sendMessage(message.chat.id, `<b>${String(Math.round((data.main.temp_min) - 273.15))}°C In ${String(data.name)} Now!!</b>`, { parse_mode: "HTML" });
+                } else {
+                    bot.sendMessage(message.chat.id, "Entered City Not Found!!");
+                }
+            }
+            else {
+                bot.sendMessage(message.chat.id, "Enter City Name After /weather");
+            }
+        }
+    }
 });
