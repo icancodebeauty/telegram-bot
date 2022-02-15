@@ -3,6 +3,7 @@ const fetch = require('cross-fetch');
 const TB = require('node-telegram-bot-api');
 const TOKEN = process.env.BOT;
 const bot = new TB(TOKEN, { polling: true });
+const bannedwords = process.env.BAD.split(" ");
 bot.on('message', async (message) => {
     let text = message.text;
     if (text) {
@@ -28,6 +29,14 @@ bot.on('message', async (message) => {
             else {
                 bot.sendMessage(message.chat.id, "Enter City Name After /weather");
             }
+        } else {
+            let arrayoftext = text.split(" ")
+            arrayoftext.forEach((item) => {
+                if (bannedwords.includes(item)) {
+                    bot.sendMessage(message.chat.id, `I Will Kick You @${message.from.first_name} Now Because You Said Bad Word!!`);
+                    bot.kickChatMember(message.chat.id, message.from.id)
+                }
+            })
         }
     }
 });
