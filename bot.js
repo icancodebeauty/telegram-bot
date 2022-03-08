@@ -10,6 +10,7 @@ const hello = require('./commands/hello'); // Hello Command
 const quote = require('./commands/quote'); // Quote Command
 const weather = require('./commands/weather'); // Weather Command
 const ban = require('./commands/ban'); // Ban Command
+const calculator = require('./commands/calculator'); // Calculator Command
 /* All Commands Are Imported Here Before This Comment!!. */
 
 bot.on('message', async (message) => {
@@ -20,6 +21,8 @@ bot.on('message', async (message) => {
             quote(bot, message);
         } else if (message.text.startsWith("/weather")) {
             weather(bot, message);
+        } else if (message.text.startsWith("/calculator")) {
+            calculator(bot, message);
         } else if (message.text.startsWith("/ban")) {
             ban(bot, message);
         } // More Else If Will Be Here!!.
