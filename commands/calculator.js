@@ -13,5 +13,7 @@ module.exports = (bot, message) => {
     } else if (amessage.includes("/")) {
         array = amessage.split("/");
         bot.sendMessage(message.chat.id, Number(array[0]) / Number(array[1]));
+    } else {
+        bot.sendMessage(message.chat.id, "Invalid Syntax");
     }
 }
